@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bboss.cache.validDao.interfaces.IRuleExecuteDao">
+    <resultMap id="BaseResultMap" type="com.bboss.cache.bean.valid.RuleExecuteLog">
+        <result column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="PRE_CHECK_TRANS_IDO" jdbcType="VARCHAR" property="preCheckTransIdo"/>
+        <result column="WEB_CHECK_TRANS_IDO" jdbcType="VARCHAR" property="webCheckTransIdo"/>
+        <result column="OFFER_NUM" jdbcType="VARCHAR" property="offerNum"/>
+        <result column="PACKAGE_NUM" jdbcType="VARCHAR" property="packageNum"/>
+        <result column="SKU_NUM" jdbcType="VARCHAR" property="skuNum"/>
+        <result column="RULE_NUM" jdbcType="VARCHAR" property="ruleNum"/>
+        <result column="RULE_NAME" jdbcType="VARCHAR" property="ruleName"/>
+        <result column="CHECK_TYPE" jdbcType="VARCHAR" property="checkType"/>
+        <result column="CHECK_CODE" jdbcType="VARCHAR" property="checkCode"/>
+        <result column="CHECK_DESC" jdbcType="VARCHAR" property="checkDesc"/>
+        <result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ID,
+        PRE_CHECK_TRANS_IDO,
+        WEB_CHECK_TRANS_IDO,
+        OFFER_NUM,
+        PACKAGE_NUM,
+        SKU_NUM,
+        RULE_NUM,
+        RULE_NAME,
+        CHECK_TYPE,
+        CHECK_CODE,
+        CHECK_DESC
+    </sql>
+
+    <insert id="insert" parameterType="com.bboss.cache.bean.valid.RuleSyncLog">
+        insert into rule_execute_log (<include refid="Base_Column_List"/>)
+        values (#{id,jdbcType=VARCHAR}, #{preCheckTransIdo,jdbcType=VARCHAR}, #{webCheckTransIdo,jdbcType=VARCHAR},
+        #{offerNum,jdbcType=VARCHAR}, #{packageNum,jdbcType=VARCHAR}, #{skuNum,jdbcType=VARCHAR},
+        #{ruleNum,jdbcType=VARCHAR},#{ruleName,jdbcType=VARCHAR}, #{checkType,jdbcType=VARCHAR},
+        #{checkCode,jdbcType=VARCHAR}, #{checkDesc,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="queryExecuteRuleLog" resultType="com.bboss.cache.bean.valid.RuleExecuteLogReq">
+        SELECT offer_num AS offerNum,
+               sku_num AS skuNum,
+               business_num as businessNum,
+               rule_num as ruleNum,
+               COUNT(*) AS ruleTotalCount ,
+               SUM(CASE WHEN check_code = '00' THEN 1 ELSE 0 END) AS ruleSuccessCount,
+               SUM(CASE WHEN check_code = '99' THEN 1 ELSE 0 END) AS ruleErrorCount,
+               DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s') AS createTime
+        FROM rule_execute_log
+        where create_date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY offer_num,
+                 sku_num,
+                 business_num,
+                 rule_num
+    </select>
+</mapper>

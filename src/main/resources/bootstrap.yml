@@ -1,0 +1,39 @@
+app:
+  packageName: @project.artifactId@-@project.version@-@build.time@.jar
+  build:
+    time: @build.time@
+  project:
+    version: v1.0.0
+spring:
+  main:
+    allow-circular-references: true  #允许循环引用
+  application:
+    name: cabs-cache
+  cloud:
+    nacos:
+      config:
+        # 配置中心地址
+        server-addr: ${NACOS_SERVICE_HOST}
+        # 配置文件格式
+        fileExtension: yaml
+        #命名空间 填id （3.2.1介绍）
+        namespace: 5b932ab6-7af4-47c2-8e74-60991c8192b9
+        #分组
+        group: ${NACOS_GROUP}
+        username: ${NACOS_UN}
+        #ENC(EcOtbhaGgDX8MHrzDdeuBP6YZ6Bh6U1Le0WV6nI4udY=)
+        password: ${NACOS_PW}
+        #引用公共变量配置同ABS中application.yml
+        shared-configs:
+          - dataId: application.yaml
+            group: ${NACOS_GROUP}
+  security:
+    basic:
+      enabled: false
+    user:
+      name: cabs
+      password: ${NACOS_PW}
+jasypt:
+  encryptor:
+    password: cabs
+    algorithm: PBEWithMD5AndDES
